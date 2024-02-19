@@ -34,38 +34,63 @@ export default {
   components: { ButtonElement },
   data() {
     return {
+      id: "",
+      nickname: "",
     };
   },
   async mounted() {
-    if(this.checkIfFirstVisit() == true) this.countTasks = await this.getCountTasks();
+    if(this.checkIfFirstVisit() == true) await this.CreateUser();
     },
   methods: {
     ...mapActions("mReq", ["sendRequest"]),
     checkIfFirstVisit(){
-      
-      if (document.cookie.length == 0) {
-        document.cookie = 1;
-        return true; // Первое посещение
-    } else {
-        return false; // Посещение не первое
-    }
+      return !document.cookie.includes("userId");
+    //   if (document.cookie.length == 0) {
+    //     document.cookie = 1;
+    //     return true; // Первое посещение
+    // } else {
+    //     return false; // Посещение не первое
+    // }
     },
-    AuthUser(){
-      
-    },
-    async getCountTasks() {
+    async CreateUser() {
       try {
         console.log("1ERFTGH")
         const response = await this.sendRequest({
-          request: "POST",
+          request: "GET",
           url: `users`
         });
+        const UserData = await response.json();
+        this.id = UserData.id;
+        this.nickname = UserData.nickname
+        console.log(this.nickname)
+        document.cookie = `userId=${this.id}`;
+
+        await this.AuthUser();
         if (!response.ok) throw new Error("Ошибка при получении задания");
-        //return await response.json();
       } catch (error) {
         console.log(error);
       }
-    }
+    },
+    async AuthUser(){
+      try{
+        console.log("Auth HHAHA")
+        const response = await this.sendRequest({
+          request: "POST",
+          url: `auth/log-in/${this.id}`
+        });
+        const show = await this.sendRequest({
+          request: "GET",
+          url: `auth`
+        });
+        console.log(show)
+        if (!response.ok) throw new Error("Ошибка при получении задания");
+      }
+      catch(error)
+      {
+        console(error);
+        console.log("Жаль")
+      }
+    },
   },
 };
 </script>

@@ -11,7 +11,7 @@
           <button-element
             class="main-menu-block__button"
             classButton="button_white"
-            @click="validateAndEdit"
+            @click="EditNick"
             label="Поменять ник"
           />
         </div>
@@ -28,14 +28,13 @@ export default {
   data() {
     return {
       dataNick: {
-        id: 1,
         nickname: "",
       },
       error: null
     };
   },
   methods: {
-    async validateAndEdit() {
+    async EditNick() {
       try {
         console.log("nick");
         await this.$store.dispatch('mEdit/editNickname', this.dataNick);
