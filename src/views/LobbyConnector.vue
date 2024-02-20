@@ -16,6 +16,7 @@
             >
               <form-input
                 class="lobby-connector-block__input"
+                v-model.trim="dataLobby.code"
                 placeholderInput="Введите код"
               />
               <span class="validation-error">{{ errors[0] }}</span>
@@ -28,7 +29,7 @@
         <button-element
           class="lobby-connector-block__button"
           classButton="button_white"
-          @click="$router.push({ name: 'lobby' })"
+          @click="joinLobby"
           label="Подключиться"
         />
       </div>
@@ -50,9 +51,22 @@ export default {
     ButtonElement,
   },
   data() {
-    return {};
+    return {
+      dataLobby: {
+        code: "",
+      },
+    };
   },
-  methods: {},
+  methods: {
+    async joinLobby() {
+      try {
+        localStorage.setItem('code', this.dataLobby.code);
+        await this.$store.dispatch('mLobby/joinLobby', this.dataLobby.code);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
 };
 </script>
 

@@ -41,7 +41,6 @@ export default {
   components: { ButtonElement },
   data() {
     return {
-      code: "",
       numPlayers: "",
     };
   },
@@ -60,13 +59,10 @@ export default {
     },
     async lobbyCreate() {
       try {
-        console.log("Lobby");
         const response = await this.$store.dispatch('mLobby/createLobby', this.numPlayers);
         const lobbyCode = await response.json();
-        this.code = lobbyCode.code;
         localStorage.setItem('code', lobbyCode.code);
         await this.$store.dispatch('mLobby/joinLobby', lobbyCode.code);
-        console.log(this.code)
       } catch (error) {
         console.log(error);
       }

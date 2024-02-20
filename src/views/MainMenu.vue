@@ -58,7 +58,6 @@ export default {
         this.nickname = UserData.nickname
         console.log(this.nickname)
         document.cookie = `userId=${this.id}`;
-
         await this.AuthUser();
         if (!response.ok) throw new Error("Ошибка при получении задания");
       } catch (error) {

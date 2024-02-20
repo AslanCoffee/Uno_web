@@ -28,6 +28,28 @@
           />
         </div>
       </div>
+      <div class="kick__player">
+        <button-element
+          class="lobby-creator-block__button"
+          classButton="button_white"
+          @click="kickPlayer"
+          label="Удалить игрока"
+        />
+        <player-element
+          class="player__item"
+          v-for="player in players"
+          :key="player.id"
+          :player="player"
+        />
+      </div>
+      <div class="exit__lobby">
+      <button-element
+              class="lobby-creator-block__button"
+              classButton="button_white"
+              @click="exitLobby"
+              label="Выйти из лобби"
+            />
+      </div>
     </div>
   </div>
 </template>
@@ -47,21 +69,23 @@ export default {
     };
   },
   async mounted() {
-    this.players = [
-      { name: "Иван" },
-      { name: "Лариса" },
-      { name: "Аслан" },
-      { name: "Кирилл" },
-    ];
-    this.players[0].name = "ksksk"; 
-    const constCode = localStorage.getItem('code');
-    this.code = constCode;
+    this.loadPlayers(); // Загрузка игроков при монтировании компонента
+    setInterval(this.loadPlayers, 5000); // Периодическое обновление списка игроков каждые 5 секунд
+    this.code = localStorage.getItem('code'); // Установка кода игры из localStorage
   },
   methods: {
-    async EditNick() {
+    async loadPlayers() {
       try {
-        console.log("nick");
-        await this.$store.dispatch('mUsers/editNickname', this.dataNick);
+        const response = await this.$store.dispatch('mLobby/infoPlayers');
+        const infoPlayers = await response.json();
+        this.players = infoPlayers.map(player => ({ name: player.nickname }));
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async exitLobby() {
+      try {
+        await this.$store.dispatch('mLobby/exitLobby');
       } catch (error) {
         console.log(error);
       }
@@ -132,5 +156,16 @@ line-height: normal;
 .lobby__bottom {
   display: flex;
   justify-content: center;
+}
+
+.kick__player {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.exit__lobby {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 </style>
