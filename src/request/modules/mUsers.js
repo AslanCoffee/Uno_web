@@ -1,7 +1,7 @@
 import mReq from "./mReq";
-import router from "../router/index";
+import router from "../../router/index";
 
-const mEdit = {
+const mUsers = {
     namespaced: true,
     state: {
         user: { nickname: "", id: ""}
@@ -27,8 +27,19 @@ const mEdit = {
               console.log(error);
             }
         },
+          async userData({ dispatch }) {
+            try {
+              return await dispatch("mReq/sendRequest", {
+                request: "GET",
+                url: "auth",
+              });
+            } catch (error) {
+              console.error(error);
+              throw error;
+            }
+          },
     },
     modules: { mReq },
 };
 
-export default mEdit;
+export default mUsers;

@@ -6,7 +6,7 @@
           <div class="lobby__title">Лобби</div>
           <div class="lobby__game-code">
             <p>Код игры</p>
-            <h3 class="lobby__id">{{ id }}</h3>
+            <h3 class="lobby__id">{{ code }}</h3>
           </div>
         </div>
         <div class="lobby_body">
@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       players: [],
-      id: "KJ89",
+      code: "",
     };
   },
   async mounted() {
@@ -53,6 +53,19 @@ export default {
       { name: "Аслан" },
       { name: "Кирилл" },
     ];
+    this.players[0].name = "ksksk"; 
+    const constCode = localStorage.getItem('code');
+    this.code = constCode;
+  },
+  methods: {
+    async EditNick() {
+      try {
+        console.log("nick");
+        await this.$store.dispatch('mUsers/editNickname', this.dataNick);
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };
 </script>

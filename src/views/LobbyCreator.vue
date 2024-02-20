@@ -11,19 +11,19 @@
             <button-element
               class="lobby-creator-block__button"
               classButton="button_white"
-              @click="$router.push({ name: 'lobby' })"
+              @click="twoplayers"
               label="2 игрока"
             />
             <button-element
               class="lobby-creator-block__button"
               classButton="button_white"
-              @click="$router.push({ name: 'lobby' })"
+              @click="threeplayers"
               label="3 игрока"
             />
             <button-element
               class="lobby-creator-block__button"
               classButton="button_white"
-              @click="$router.push({ name: 'lobby' })"
+              @click="fourplayers"
               label="4 игрока"
             />
           </div>
@@ -41,10 +41,37 @@ export default {
   components: { ButtonElement },
   data() {
     return {
-
+      code: "",
+      numPlayers: "",
     };
   },
-  methods: {},
+  methods: {
+    async twoplayers() {
+      this.numPlayers = 2;
+      await this.lobbyCreate();
+    },
+    async threeplayers() {
+      this.numPlayers = 3;
+      await this.lobbyCreate();
+    },
+    async fourplayers() {
+      this.numPlayers = 4;
+      await this.lobbyCreate();
+    },
+    async lobbyCreate() {
+      try {
+        console.log("Lobby");
+        const response = await this.$store.dispatch('mLobby/createLobby', this.numPlayers);
+        const lobbyCode = await response.json();
+        this.code = lobbyCode.code;
+        localStorage.setItem('code', lobbyCode.code);
+        await this.$store.dispatch('mLobby/joinLobby', lobbyCode.code);
+        console.log(this.code)
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
 };
 </script>
 

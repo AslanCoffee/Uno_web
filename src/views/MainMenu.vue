@@ -40,17 +40,11 @@ export default {
   },
   async mounted() {
     if(this.checkIfFirstVisit() == true) await this.CreateUser();
-    },
+  },
   methods: {
     ...mapActions("mReq", ["sendRequest"]),
     checkIfFirstVisit(){
       return !document.cookie.includes("userId");
-    //   if (document.cookie.length == 0) {
-    //     document.cookie = 1;
-    //     return true; // Первое посещение
-    // } else {
-    //     return false; // Посещение не первое
-    // }
     },
     async CreateUser() {
       try {

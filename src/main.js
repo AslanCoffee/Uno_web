@@ -2,8 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import "@/fonts/Gadugi.ttf";
-import mReq from './users/mReq';
-import store from '@/users/index';
+import mReq from './request/modules/mReq';
+import store from '@/request/index';
 
 Vue.config.productionTip = false;
 

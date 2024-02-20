@@ -37,7 +37,7 @@ export default {
     async EditNick() {
       try {
         console.log("nick");
-        await this.$store.dispatch('mEdit/editNickname', this.dataNick);
+        await this.$store.dispatch('mUsers/editNickname', this.dataNick);
       } catch (error) {
         console.log(error);
       }
