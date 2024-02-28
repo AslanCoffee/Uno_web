@@ -11,12 +11,14 @@
         </div>
         <div class="lobby_body">
           <div class="lobby__list">
-            <player-element
+            <div
               class="player__item"
               v-for="player in players"
               :key="player.id"
-              :player="player"
-            />
+              @click="confirmRemovePlayer(player)"
+              >
+              {{ player.name }}
+            </div>
           </div>
         </div>
         <div class="lobby__bottom">
@@ -28,57 +30,63 @@
           />
         </div>
       </div>
-      <div class="kick__player">
+      <div class="exit__lobby">
         <button-element
           class="lobby-creator-block__button"
           classButton="button_white"
-          @click="kickPlayer"
-          label="Удалить игрока"
-        />
-        <player-element
-          class="player__item"
-          v-for="player in players"
-          :key="player.id"
-          :player="player"
+          @click="exitLobby"
+          label="Выйти из лобби"
         />
       </div>
-      <div class="exit__lobby">
-      <button-element
-              class="lobby-creator-block__button"
-              classButton="button_white"
-              @click="exitLobby"
-              label="Выйти из лобби"
-            />
+    </div>
+
+    <div class="modal" v-if="showConfirmationModal">
+      <div class="modal__content">
+        <p>Вы уверены, что хотите удалить игрока из лобби?</p>
+        <div class="modal__buttons">
+          <button-element
+            classButton="button_white"
+            @click="cancelRemovePlayer"
+            label="Отмена"
+          />
+          <button-element
+            classButton="button_red"
+            @click="confirmRemovePlayerAction"
+            label="Удалить"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import PlayerElement from "@/components/PlayerElement";
+//import PlayerElement from "@/components/PlayerElement";
 import ButtonElement from "@/components/ButtonElement";
 export default {
   components: {
-    PlayerElement,
+    //PlayerElement,
     ButtonElement,
   },
   data() {
     return {
       players: [],
       code: "",
+      showConfirmationModal: false,
+      playerToRemove: null,
     };
   },
   async mounted() {
-    this.loadPlayers(); // Загрузка игроков при монтировании компонента
-    setInterval(this.loadPlayers, 5000); // Периодическое обновление списка игроков каждые 5 секунд
-    this.code = localStorage.getItem('code'); // Установка кода игры из localStorage
+    this.loadPlayers();
+    setInterval(this.loadPlayers, 5000);
+    this.code = localStorage.getItem('code');
   },
   methods: {
     async loadPlayers() {
       try {
         const response = await this.$store.dispatch('mLobby/infoPlayers');
         const infoPlayers = await response.json();
-        this.players = infoPlayers.map(player => ({ name: player.nickname }));
+        this.players = infoPlayers.map(player => ({ id: player.id, name: player.nickname }));
       } catch (error) {
         console.log(error);
       }
@@ -90,11 +98,54 @@ export default {
         console.log(error);
       }
     },
+    confirmRemovePlayer(player) {
+      this.playerToRemove = player;
+      this.showConfirmationModal = true;
+    },
+    cancelRemovePlayer() {
+      this.playerToRemove = null;
+      this.showConfirmationModal = false;
+    },
+    async confirmRemovePlayerAction() {
+      if (this.playerToRemove) {
+        const index = this.players.findIndex(p => p.id === this.playerToRemove.id);
+        if (index !== -1) {
+          this.players.splice(index, 1);
+          await this.$store.dispatch('mLobby/kickPlayer', this.playerToRemove.id);
+        }
+      }
+      this.playerToRemove = null;
+      this.showConfirmationModal = false;
+    },
   },
 };
 </script>
 
 <style scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal__content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.modal__buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
 .lobby {
   display: flex;
   justify-content: center;
@@ -147,7 +198,7 @@ export default {
 
 .player__item {
   flex: 33%;
-font-size: 80px;
+font-size: 35px;
 font-style: normal;
 font-weight: 400;
 line-height: normal;

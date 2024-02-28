@@ -32,7 +32,20 @@
     </div>
   </div>
 </template>
-
+<!-- <div class="kick__player">
+        <button-element
+          class="lobby-creator-block__button"
+          classButton="button_white"
+          @click="kickPlayer"
+          label="Удалить игрока"
+        />
+        <player-element
+          class="player__item"
+          v-for="player in players"
+          :key="player.id"
+          :player="player"
+        />
+      </div> -->
 <script>
 import "@/validators/validation-rules";
 import ButtonElement from "@/components/ButtonElement.vue";
