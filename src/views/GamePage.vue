@@ -29,6 +29,7 @@ export default {
   data() {
     return {
       deck: [{ id: 5, color: "red", number: 2 }],
+      currentCard: null,
       players: [
         {
           id: 1,
@@ -38,26 +39,50 @@ export default {
         },
         {
           id: 2,
-          name: "Лариса",
-          position: "right",
-          cards: [{ id: 2, color: "blue", number: 3 }],
-        },
-        {
-          id: 3,
           name: "Аслан",
           position: "bottom",
-          cards: [{ id: 3, color: "green", number: 5 }],
-        },
-        {
-          id: 4,
-          name: "Кирилл",
-          position: "left",
-          cards: [{ id: 4, color: "yellow", number: 9 }],
+          cards: [{ id: 2, color: "blue", number: 3 }],
         },
         // Add more players and cards as needed
       ],
     };
   },
+  async mounted() {
+    const response = await this.$store.dispatch('mLobby/infoPlayers');
+    const infoPlayers = await response.json();
+    this.players = infoPlayers.map(player => ({ id: player.id, name: player.nickname }));
+    this.players[0].position = "top";
+    this.players[1].position = "bottom";
+  },
+  methods:{
+    async tableCard() {
+      try {
+        const response = await this.$store.dispatch('mLobby/infoPlayers');
+        const infoPlayers = await response.json();
+        this.players = infoPlayers.map(player => ({ id: player.id, name: player.nickname }));
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async moveCard() {
+      try {
+        const response = await this.$store.dispatch('mLobby/infoPlayers');
+        const infoPlayers = await response.json();
+        this.players = infoPlayers.map(player => ({ id: player.id, name: player.nickname }));
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async takeCard() {
+      try {
+        const response = await this.$store.dispatch('mLobby/infoPlayers');
+        const infoPlayers = await response.json();
+        this.players = infoPlayers.map(player => ({ id: player.id, name: player.nickname }));
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  }
 };
 </script>
 

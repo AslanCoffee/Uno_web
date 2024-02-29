@@ -38,6 +38,23 @@ const mUsers = {
               throw error;
             }
           },
+          async userReady({ dispatch }) {
+            try {
+              const response = await dispatch("mReq/sendRequest", {
+                request: "PATCH",
+                url: "users/switch/ready",
+              });
+              if (response.ok) {
+                return response;
+              } else if (response.status === 401) {
+                throw Error("Ошибка авторизации: неверный email или пароль");
+              } else {
+                throw Error("Неизвестная ошибка");
+              }
+            } catch (error) {
+              console.log(error);
+            }
+        },
     },
     modules: { mReq },
 };

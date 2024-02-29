@@ -16,6 +16,7 @@
               v-for="player in players"
               :key="player.id"
               @click="confirmRemovePlayer(player)"
+              :class="{ 'player-ready': player.ready }"
               >
               {{ player.name }}
             </div>
@@ -23,10 +24,17 @@
         </div>
         <div class="lobby__bottom">
           <button-element
+            v-if="isHost"
             class="lobby__button"
             classButton="button_white"
-            @click="$router.push({ name: 'game' })"
+            @click="startGame()"
             label="Начать игру"
+          />
+          <button-element
+            class="lobby__button"
+            classButton="button_white"
+            @click="readyForGame()"
+            label="Готов"
           />
         </div>
       </div>
@@ -61,11 +69,9 @@
 </template>
 
 <script>
-//import PlayerElement from "@/components/PlayerElement";
 import ButtonElement from "@/components/ButtonElement";
 export default {
   components: {
-    //PlayerElement,
     ButtonElement,
   },
   data() {
@@ -74,12 +80,27 @@ export default {
       code: "",
       showConfirmationModal: false,
       playerToRemove: null,
+      currentUser: null,
+      LobbyHost: null,
+      gameCode: null,
     };
   },
   async mounted() {
     this.loadPlayers();
     setInterval(this.loadPlayers, 5000);
+    setInterval(this.gameInit, 2000);
     this.code = localStorage.getItem('code');
+    const responseHost = await this.$store.dispatch('mLobby/getHostId');
+    const HostData = await responseHost.json();
+    const responseUser = await this.$store.dispatch('mUsers/userData');
+    const UserData = await responseUser.json();
+    this.currentUser = UserData.id;
+    this.LobbyHost = HostData.hostId;
+  },
+  computed: {
+    isHost() {
+      return this.currentUser === this.LobbyHost;
+    }
   },
   methods: {
     async loadPlayers() {
@@ -91,6 +112,18 @@ export default {
         console.log(error);
       }
     },
+    async gameInit() {
+      try {
+        const response = await this.$store.dispatch('mGame/gameData');
+        const infoGame = await response.json();
+        this.gameCode = infoGame.gameID;
+        if (this.gameCode && this.$route.name !== 'game') {
+          this.$router.push({ name: 'game' });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async exitLobby() {
       try {
         await this.$store.dispatch('mLobby/exitLobby');
@@ -98,9 +131,11 @@ export default {
         console.log(error);
       }
     },
-    confirmRemovePlayer(player) {
+    async confirmRemovePlayer(player) {
+      if (this.currentUser === this.LobbyHost && player.id != this.LobbyHost) {
       this.playerToRemove = player;
       this.showConfirmationModal = true;
+      }
     },
     cancelRemovePlayer() {
       this.playerToRemove = null;
@@ -117,8 +152,19 @@ export default {
       this.playerToRemove = null;
       this.showConfirmationModal = false;
     },
+    async startGame() {
+      try {
+        await this.$store.dispatch('mGame/gameStart');
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async readyForGame() {
+      await this.$store.dispatch('mUsers/userReady');
+    },
   },
 };
+//this.$set(this.players[currentUserIndex], 'ready', true);
 </script>
 
 <style scoped>
@@ -218,5 +264,8 @@ line-height: normal;
   position: absolute;
   top: 10px;
   left: 10px;
+}
+.player-ready {
+  color: green; /* Зеленый цвет текста */
 }
 </style>
