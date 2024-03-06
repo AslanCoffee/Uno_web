@@ -78,6 +78,23 @@ const mGame = {
               console.log(error);
             }
         },
+        async unoMove({ dispatch }) {
+            try {
+                const response = await dispatch("mReq/sendRequest", {
+                request: "POST",
+                url: "game/uno-move",
+              });
+              if (response.ok) {
+                return response;
+              } else if (response.status === 401) {
+                throw Error("Ошибка авторизации: неверный email или пароль");
+              } else {
+                throw Error("Неизвестная ошибка");
+              }
+            } catch (error) {
+              console.log(error);
+            }
+        },
     },
     modules: { mReq },
 };
