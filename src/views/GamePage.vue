@@ -148,7 +148,7 @@ export default {
         console.log(error);
       }
     },
-    async currentMoveUser() {
+    async currentMoveUser() {//Прикрутить подсветку надо
       try {
         const responseGameData = await this.$store.dispatch('mGame/gameData'); // информация об игроке который сейчас будет ходить
         const gameData = await responseGameData.json();

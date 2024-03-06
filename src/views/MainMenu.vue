@@ -41,7 +41,7 @@ export default {
   async mounted() {
     if(this.checkIfFirstVisit() == true) await this.CreateUser();
   },
-  methods: {
+  methods: {//поменять этот шлак
     ...mapActions("mReq", ["sendRequest"]),
     checkIfFirstVisit(){
       return !document.cookie.includes("userId");
